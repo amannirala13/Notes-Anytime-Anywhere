@@ -2,53 +2,75 @@ package com.asdev.naa;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.view.MenuItem;
+import android.widget.FrameLayout;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.asdev.naa.fragments.*;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 
 public class MainActivity extends AppCompatActivity {
 
-    private FirebaseDatabase db;
-    private DatabaseReference userdb;
+    private notes notesFragment;
+    private schedule scheduleFragment;
+    private settings settingsFragment;
+
+    private BottomNavigationView mainBottomNav;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-                checkRegisteredUser();
+        mainBottomNav = findViewById(R.id.main_bottom_navBar);
+        mainBottomNav.setOnNavigationItemSelectedListener(ItemSelectedListener);
+
+        notesFragment = new notes();
+        scheduleFragment = new schedule();
+        settingsFragment = new settings();
+
+        //Load default Fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.fragment_holder, notesFragment, null);
+        fragmentTransaction.commit();
 
     }
 
-    private void checkRegisteredUser() {
+    //Bottom Navigation Click Listener
+    private BottomNavigationView.OnNavigationItemSelectedListener ItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_note:
+                    switchFragment(notesFragment);
+                    return true;
 
-        db = FirebaseDatabase.getInstance();
-        userdb = db.getReference("Student").child("User");
-        userdb.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.hasChild(FirebaseAuth.getInstance().getUid()))
-                    openRegisterActivity();
+                case R.id.navigation_schedule:
+                    switchFragment(scheduleFragment);
+                    return true;
+
+                case R.id.navigation_settings:
+                    switchFragment(settingsFragment);
+                    return true;
+
+                default:
+                    return false;
             }
+        }
+    };
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(MainActivity.this, "Ruh! Unable to connect to database", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void openRegisterActivity() {
-            Intent mainActivityIntent = new Intent(MainActivity.this, Register.class);
-            startActivity(mainActivityIntent);
-            finish();
+    //Swaps frames in the Frame Holder
+    public void switchFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_holder, fragment, null);
+        fragmentTransaction.commit();
     }
 }

@@ -40,6 +40,8 @@ public class SignIn extends AppCompatActivity {
 
     private String phoneNumber, verificationID,code;
 
+    private boolean OTPverified = false;
+
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks phoneCallBacks;
 
     private TextInputEditText phoneText;
@@ -87,6 +89,7 @@ public class SignIn extends AppCompatActivity {
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
                 OTPdialog.cancel();
                 authUser(phoneAuthCredential);
+                OTPverified = true;
             }
 
             @Override
@@ -120,6 +123,7 @@ public class SignIn extends AppCompatActivity {
 
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                 // The verification code entered was invalid
+                                Toast.makeText(SignIn.this, "Ruh! Unable to connect ot database", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -134,10 +138,33 @@ public class SignIn extends AppCompatActivity {
         userdb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.hasChild(FirebaseAuth.getInstance().getUid()))
-                    openMainActivity();
+                if(dataSnapshot.hasChild(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())))
+                {
+                    userdb.child(FirebaseAuth.getInstance().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.hasChild("name"))
+                                openMainActivity();
+                            else
+                                openRegisterActivity();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Toast.makeText(SignIn.this, "Ruh! Unable to connect to database", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
                 else
-                    openRegisterActivity();
+                    userdb.child(FirebaseAuth.getInstance().getUid()).child("phone").setValue(phoneNumber).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful())
+                                openRegisterActivity();
+                            else
+                                Toast.makeText(SignIn.this, "Ruh! Unable to connect to database", Toast.LENGTH_SHORT).show();
+                        }
+                    });
             }
 
             @Override
@@ -203,9 +230,13 @@ public class SignIn extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                Toast.makeText(SignIn.this, "It took longer than usual", Toast.LENGTH_LONG).show();
-                autoOTPlayout.setVisibility(View.GONE);
-                enterOTPlayout.setVisibility(View.VISIBLE);
+                if(!OTPverified)
+                {
+                    Toast.makeText(SignIn.this, "It took longer than usual", Toast.LENGTH_LONG).show();
+                    autoOTPlayout.setVisibility(View.GONE);
+                    enterOTPlayout.setVisibility(View.VISIBLE);
+                }
+
             }
         }.start();
     }

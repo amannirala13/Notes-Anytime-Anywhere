@@ -5,4 +5,10 @@
     <color name="colorSecondary">#03DAC6</color>
     <color name="colorSecondaryDark">#018786</color>
     <color name="colorAccent">#FFFF</color>
+
+    <color name="DarkColorPrimary">#6200EE</color>
+    <color name="DarkColorPrimaryDark">#3700B3</color>
+    <color name="DarkColorSecondary">#03DAC6</color>
+    <color name="DarkColorSecondaryDark">#018786</color>
+    <color name="DarkColorAccent">#FFFF</color>
 </resources>

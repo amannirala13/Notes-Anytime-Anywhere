@@ -3,10 +3,26 @@ package com.asdev.naa;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Objects;
 
 public class SplashScreen extends AppCompatActivity {
+
+    private FirebaseDatabase db;
+    private DatabaseReference userdb;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +49,7 @@ public class SplashScreen extends AppCompatActivity {
         }
         else if(new helper.check().isValidUser())
         {
-            Intent homeIntent = new Intent(SplashScreen.this, MainActivity.class);
-            startActivity(homeIntent);
-            finish();
+            checkRegisteredUser();
         }
         else
         {
@@ -57,5 +71,32 @@ public class SplashScreen extends AppCompatActivity {
             editor.apply();
         }
         return firstTime;   // returning first run from shared Preferences
+    }
+    private void checkRegisteredUser() {
+
+        db = FirebaseDatabase.getInstance();
+        userdb = db.getReference("Student").child("User");
+        userdb.child(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.hasChild("name"))
+                {
+                    Intent mainActivityIntent = new Intent(SplashScreen.this, Register.class);
+                    startActivity(mainActivityIntent);
+                    finish();
+                }
+                else
+                {
+                    Intent homeIntent = new Intent(SplashScreen.this, MainActivity.class);
+                    startActivity(homeIntent);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(SplashScreen.this, "Ruh! Unable to connect to database", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
