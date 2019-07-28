@@ -8,7 +8,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.FrameLayout;
 
 import com.asdev.naa.fragments.*;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -19,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private notes notesFragment;
     private schedule scheduleFragment;
     private settings settingsFragment;
+    private com.asdev.naa.fragments.shared sharedFragment;
 
     private BottomNavigationView mainBottomNav;
 
@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         notesFragment = new notes();
         scheduleFragment = new schedule();
         settingsFragment = new settings();
+        sharedFragment = new shared();
 
         //Load default Fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -58,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
 
                 case R.id.navigation_settings:
                     switchFragment(settingsFragment);
+                    return true;
+
+                case R.id.navigation_shared:
+                    switchFragment(sharedFragment);
                     return true;
 
                 default:

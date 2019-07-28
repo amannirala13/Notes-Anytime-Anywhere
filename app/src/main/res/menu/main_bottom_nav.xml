@@ -7,6 +7,11 @@
         android:title="Notes"/>
 
     <item
+        android:id="@+id/navigation_shared"
+        android:icon="@drawable/ic_shared"
+        android:title="Shared"/>
+
+    <item
         android:id="@+id/navigation_schedule"
         android:icon="@drawable/ic_timetable"
         android:title="Schedule"/>

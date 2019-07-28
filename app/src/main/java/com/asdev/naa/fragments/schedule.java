@@ -74,6 +74,7 @@ public class schedule extends Fragment {
         scheduleSettings.setSupportMultipleWindows(true);
         scheduleSettings.setDisplayZoomControls(false);
         scheduleSettings.setUseWideViewPort(true);
+        scheduleSettings.setBuiltInZoomControls(true);
         scheduleSettings.setAppCacheEnabled(true);
         scheduleSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
