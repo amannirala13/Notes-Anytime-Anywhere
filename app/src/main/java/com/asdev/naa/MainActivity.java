@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.asdev.naa.fragments.*;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -21,6 +22,21 @@ public class MainActivity extends AppCompatActivity {
     private com.asdev.naa.fragments.shared sharedFragment;
 
     private BottomNavigationView mainBottomNav;
+
+    @Override
+    public void onBackPressed() {
+        try{
+            if(scheduleFragment.canGoBack())
+                scheduleFragment.goBack();
+            else
+                super.onBackPressed();
+        }
+        catch (NullPointerException e)
+        {
+            Toast.makeText(this, "It worked", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)

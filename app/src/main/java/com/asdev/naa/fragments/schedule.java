@@ -19,6 +19,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.asdev.naa.R;
@@ -46,7 +47,6 @@ public class schedule extends Fragment {
         loadingAnimation = getView().findViewById(R.id.loading_anim);
 
        loadingView();
-
         schedulePage.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -63,7 +63,7 @@ public class schedule extends Fragment {
         schedulePage.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress)
             {
-                if(progress==100)
+                if(progress>=80)
                     scheduleView();
             }});
 
@@ -94,5 +94,20 @@ public class schedule extends Fragment {
         loadingAnimation.setVisibility(View.GONE);
         schedulePage.setVisibility(View.VISIBLE);
     }
+
+    public boolean canGoBack()
+    {
+        if (schedulePage.canGoBack())
+            return true;
+        else
+            return false;
+    }
+
+    
+   public void goBack()
+   {
+           schedulePage.goBack();
+   }
+    
 
 }
